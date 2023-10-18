@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SVG Line Chart</title>
+    <style>
+        /* Define CSS styles for the chart */
+        #chart {
+            width: 900px;
+            height: 400px;
+            border: 1px solid #ccc;
+        }
+        path {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0);
+            stroke-width: 2;
+        }
+        rect {
+            fill: steelblue;
+        }
+        text {
+            font-size: 12px;
+            text-anchor: middle;
+        }
+    </style>
+</head>
+<body>
+    <svg id="chart"></svg>
+    <script>
+        const data = [
+            { year: "2000", value: 1853 },
+            { year: "2001", value: 2584 },
+            { year: "2002", value: 2301 },
+            { year: "2003", value: 2705 },
+            { year: "2004", value: 2707 },
+            { year: "2005", value: 2703 },
+            { year: "2006", value: 2829 },
+            { year: "2007", value: 2793 },
+            { year: "2008", value: 2816 },
+            { year: "2009", value: 2898 },
+            { year: "2010", value: 2933 },
+            { year: "2011", value: 2677 },
+            { year: "2012", value: 3287 },
+            { year: "2013", value: 3252 },
+            { year: "2014", value: 3169 },
+            { year: "2015", value: 3246 },
+            { year: "2016", value: 3193 },
+            { year: "2017", value: 3168 },
+            { year: "2018", value: 3342 },
+            { year: "2019", value: 3476 },
+            { year: "2020", value: 3710 },
+        ];
+
+        const svg = document.getElementById("chart");
+        const width = 800;
+        const height = 400;
+
+        const maxYValue = 3500;
+
+        const yScaleIncrement = 500;
+
+        const margin = { top: 20, right: 30, bottom: 30, left: 60 };
+
+        const xScale = (index) => margin.left + (index * (width - margin.left - margin.right) / (data.length - 1));
+        const yScale = (value) => height - margin.bottom - (value / maxYValue) * (height - margin.top - margin.bottom);
+
+        const xAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        xAxis.setAttribute("x1", margin.left - 20);
+        xAxis.setAttribute("y1", height - margin.bottom);
+        xAxis.setAttribute("x2", width - margin.right);
+        xAxis.setAttribute("y2", height - margin.bottom);
+        xAxis.setAttribute("stroke", "black");
+        svg.appendChild(xAxis);
+
+        const yAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        yAxis.setAttribute("x1", margin.left - 20);
+        yAxis.setAttribute("y1", height - margin.bottom);
+        yAxis.setAttribute("x2", margin.left - 20);
+        yAxis.setAttribute("y2", margin.top);
+        yAxis.setAttribute("stroke", "black");
+        svg.appendChild(yAxis);
+
+        // Creating the line chart
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        let pathData = `M ${xScale(0)} ${yScale(data[0].value)}`;
+
+        for (let i = 1; i < data.length; i++) {
+            pathData += ` L ${xScale(i)} ${yScale(data[i].value)}`;
+        }
+
+        path.setAttribute("d", pathData);
+        svg.appendChild(path);
+
+        for (let i = 0; i < data.length; i++) {
+            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            rect.setAttribute("x", xScale(i) - 10);
+            rect.setAttribute("y", yScale(data[i].value));
+            rect.setAttribute("width", 20);
+            rect.setAttribute("height", height - margin.bottom - yScale(data[i].value));
+            svg.appendChild(rect);
+        }
+
+        for (let i = 0; i < data.length; i++) {
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", xScale(i));
+            text.setAttribute("y", height - 5);
+            text.textContent = data[i].year;
+            svg.appendChild(text);
+        }
+
+        for (let i = 0; i <= maxYValue; i += yScaleIncrement) {
+            const yTick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            yTick.setAttribute("x1", margin.left - 25);
+            yTick.setAttribute("y1", yScale(i));
+            yTick.setAttribute("x2", margin.left - 15);
+            yTick.setAttribute("y2", yScale(i));
+            yTick.setAttribute("stroke", "black");
+            svg.appendChild(yTick);
+
+            const yLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            yLabel.setAttribute("x", margin.left - 40);
+            yLabel.setAttribute("y", yScale(i) + 5);
+            yLabel.textContent = i;
+            svg.appendChild(yLabel);
+        }
+
+        // Label for Y-axis (Suicides)
+        const yLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        yLabel.setAttribute("x", margin.left - 20);
+        yLabel.setAttribute("y", margin.top - 10);
+        yLabel.textContent = "Suicides";
+        svg.appendChild(yLabel);
+
+        // Label for X-axis (Year)
+        const xLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        xLabel.setAttribute("x", width );
+        xLabel.setAttribute("y", height - margin.bottom +3);
+        xLabel.textContent = "Year";
+        svg.appendChild(xLabel);
+    </script>
+</body>
+</html>
